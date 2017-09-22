@@ -42,7 +42,7 @@ class DetailActivity : AppCompatActivity() {
     }
 
     private fun setUpListeners() {
-        val upButtons = listOf(
+        val upButtons = mutableListOf(
                 ivUpAuthor,
                 ivUpCategory,
                 ivUpDate,
@@ -52,8 +52,19 @@ class DetailActivity : AppCompatActivity() {
             upButton.setOnClickListener {
                 val constraintSet = ConstraintSet()
                 constraintSet.clone(clContainer)
+                val nextIndex = upButtons.indexOf(it) + 1
+                val view = upButtons.getOrNull(nextIndex)
                 val oldTop = (it.layoutParams as ConstraintLayout.LayoutParams).topToBottom
                 constraintSet.connect(it.id, ConstraintSet.TOP, R.id.guideline, ConstraintSet.BOTTOM)
+                view?.let {
+                    constraintSet.connect(it.id, ConstraintSet.TOP, oldTop, ConstraintSet.BOTTOM)
+                }
+                if (it != upButtons[0]) {
+                    constraintSet.connect(upButtons[0].id, ConstraintSet.TOP, it.id, ConstraintSet.BOTTOM)
+                }
+                upButtons.remove(it)
+                upButtons.add(0, upButton)
+                constraintSet.applyTo(clContainer)
             }
         }
     }
